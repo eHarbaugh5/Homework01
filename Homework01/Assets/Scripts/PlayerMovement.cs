@@ -70,10 +70,37 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //  rework so that you can jump through a platforms bottom
         if (collision.gameObject.CompareTag("Ground"))
-        {
-            canJump = true;
+        { 
+
+            //  This but == 0, was resulting in odd numbers, while resting in the ground
+            if (playerRigidBody.velocity.y >= -1 && playerRigidBody.velocity.y <= 1)
+            {
+
+                canJump = true;
+
+            }
         }
+
+
+        //  add collision for enemies that trigger game over
+
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+
+        if (collision.gameObject.CompareTag("OB"))
+        {
+
+            //  tell game manager that you died and prompt the main menu screen
+
+        }
+
+
+    }
+
+
 
 }
