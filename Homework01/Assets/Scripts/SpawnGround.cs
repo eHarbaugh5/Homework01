@@ -1,29 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class SpawnGround : MonoBehaviour
 {
+    //  spawning related
     public GameObject[] spawnLocations;
-    public GameObject groundPrefab;
-    public GameObject platformPrefab;
+    public GameObject[] groundPrefabs;
+    public GameObject[] platformPrefabs;
+    //  UI
+    public TMP_Text scoreText;
+    private ScoreTracker scoreTrackerScript;
+    //  Timers and Pos Trackers
     private float groundTimer;
     public float groundTimerInterval;
-    private int groundPos;
-
+    private int i;
+    //  Switch Bools
     private bool canTimerTrigger1;
     private bool canTimerTrigger2;
-    // Start is called before the first frame update
+    private bool skipedGroundSpawn;
+
+
+
     void Start()
     {
         createFloor();
         groundTimerInterval = 3.3f;
         groundTimer = groundTimerInterval;
-        groundPos = 0;
         canTimerTrigger1 = true;
         canTimerTrigger2 = true;
+        skipedGroundSpawn = false;
+        scoreTrackerScript = scoreText.GetComponent<ScoreTracker>();
         
     }
 
@@ -38,7 +48,7 @@ public class SpawnGround : MonoBehaviour
     private void createFloor()
     {
 
-        GameObject newFloor = Instantiate(groundPrefab);
+        GameObject newFloor = Instantiate(groundPrefabs[Random.Range(0, 7)]);
         newFloor.transform.position = new Vector2(spawnLocations[0].transform.position.x, spawnLocations[0].transform.position.y);
         
 
@@ -47,13 +57,10 @@ public class SpawnGround : MonoBehaviour
     private void createPlatform()
     {
 
-        GameObject newPlatform = Instantiate(platformPrefab);
-        newPlatform.transform.position = new Vector2(spawnLocations[groundPos].transform.position.x, spawnLocations[groundPos].transform.position.y);
-        groundPos++;
-        if (groundPos == spawnLocations.Length || groundPos == 0)
-        {
-            groundPos = 1;
-        }
+        i = Random.Range(1, 3);
+        GameObject newPlatform = Instantiate(platformPrefabs[Random.Range(0, 8)]);
+        newPlatform.transform.position = new Vector2(spawnLocations[i].transform.position.x, spawnLocations[i].transform.position.y);
+        
 
     }
 
@@ -67,10 +74,21 @@ public class SpawnGround : MonoBehaviour
         if (groundTimer <= 0)
         {
             
-            if (Random.Range(0, 6) != 0)
+            if (Random.Range(0, 6) != 0 || skipedGroundSpawn == true)
             {
                 
                 createFloor();
+                
+                //  add score
+                scoreTrackerScript.addToScore(0.5f);
+                skipedGroundSpawn = false;
+                
+            }
+            else
+            {
+                
+                scoreTrackerScript.addToScore(1);
+                skipedGroundSpawn = true;
 
             }
             groundTimer = groundTimerInterval;
@@ -79,23 +97,28 @@ public class SpawnGround : MonoBehaviour
 
 
         }
+
         if (groundTimer >= groundTimerInterval / 2 && canTimerTrigger1)
         {
 
-            createPlatform();
+            if (Random.Range(0,4) != 0)
+            {
+                createPlatform();
+            }
             canTimerTrigger1 = false;
 
         }
-        if (groundTimer >= groundTimerInterval % 2 && canTimerTrigger2)
+        else if (groundTimer <= groundTimerInterval / 2 && canTimerTrigger2)
         {
-            createPlatform();
+
+            if (Random.Range(0, 4) != 0)
+            {
+                createPlatform();
+            }
             canTimerTrigger2 = false;
+
         }
-
-
-
-        //  spawn 2 platforms alternating
-
+        
 
     }
     

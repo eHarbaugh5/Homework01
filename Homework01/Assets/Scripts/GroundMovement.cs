@@ -16,5 +16,16 @@ public class GroundMovement : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector2.left * movementSpeed * Time.deltaTime);
+
+        if (transform.position.x <= -20)
+        {
+
+            Destroy(this.gameObject);
+
+        }
     }
+
+
+
+
 }

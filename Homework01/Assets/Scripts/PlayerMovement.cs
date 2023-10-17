@@ -1,13 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Device;
 
 public class PlayerMovement : MonoBehaviour
 {
-
-    private float inputHorizontal;
     private Rigidbody2D playerRigidBody;
+    public GameObject gameManager;
+    private GameManager gameManagerScript;
+    private GameObject newParent;
+    private float inputHorizontal;
     public float movementSpeed;
     public float jumpHeight;
     private bool canJump;
@@ -17,8 +21,9 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        canJump = true;
         playerRigidBody = GetComponent<Rigidbody2D>();
+        gameManagerScript = gameManager.GetComponent<GameManager>();
+        canJump = true;
     }
 
     // Update is called once per frame
@@ -36,7 +41,16 @@ public class PlayerMovement : MonoBehaviour
         inputHorizontal = Input.GetAxisRaw("Horizontal");
 
         playerRigidBody.velocity = new Vector2(inputHorizontal * movementSpeed, playerRigidBody.velocity.y);
-       
+        
+        //  unparent if you fall/move off a platform
+        //  is ~0, but that triggers because of physics
+        if (playerRigidBody.velocity.y < -1)
+        {
+
+            transform.parent = null;
+
+        }
+
 
     }
 
@@ -50,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
 
             playerRigidBody.velocity = new Vector2(playerRigidBody.velocity.x, jumpHeight);
             canJump = false;
+            transform.parent = null;
 
         }
         if (Input.GetKey(KeyCode.Space) && !canJump)
@@ -70,23 +85,34 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //  rework so that you can jump through a platforms bottom
+
+
         if (collision.gameObject.CompareTag("Ground"))
-        { 
+        {
 
             //  This but == 0, was resulting in odd numbers, while resting in the ground
             if (playerRigidBody.velocity.y >= -1 && playerRigidBody.velocity.y <= 1)
             {
-
+                //  add parent with ground
+                newParent = collision.gameObject;
+                playerRigidBody.transform.parent = newParent.transform;
+                //  allow jump
                 canJump = true;
-
+                
             }
         }
 
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
 
-        //  add collision for enemies that trigger game over
+            //  game over
+            //  notify game manager that the game is over
+            gameManagerScript.setGameOver(true);
+        }
 
     }
+
+    
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -94,9 +120,15 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("OB"))
         {
 
-            //  tell game manager that you died and prompt the main menu screen
+            //  tell game manager that you died
+            gameManagerScript.setGameOver(true);
+
+            //prompt the main menu screen
+
 
         }
+
+
 
 
     }
