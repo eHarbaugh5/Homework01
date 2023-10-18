@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using TMPro;
+//using System.Diagnostics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Device;
@@ -11,6 +12,9 @@ public class PlayerMovement : MonoBehaviour
     public GameObject gameManager;
     private GameManager gameManagerScript;
     private GameObject newParent;
+    public TMP_Text scoreTrackerText;
+    private ScoreTracker scoreTrackerScript;
+
     private float inputHorizontal;
     public float movementSpeed;
     public float jumpHeight;
@@ -21,8 +25,10 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //  remember to change the collider to match the new sprite
         playerRigidBody = GetComponent<Rigidbody2D>();
         gameManagerScript = gameManager.GetComponent<GameManager>();
+        scoreTrackerScript = scoreTrackerText.GetComponent<ScoreTracker>();
         canJump = true;
     }
 
@@ -104,8 +110,6 @@ public class PlayerMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
-
-            //  game over
             //  notify game manager that the game is over
             gameManagerScript.setGameOver(true);
         }
@@ -123,16 +127,22 @@ public class PlayerMovement : MonoBehaviour
             //  tell game manager that you died
             gameManagerScript.setGameOver(true);
 
-            //prompt the main menu screen
+          
+        }
+
+        if (collision.gameObject.CompareTag("Collectable"))
+        {
+           //  add score based on the collectable value of the collision
+            scoreTrackerScript.addToScore(collision.gameObject.GetComponent<Collectable>().getCollectableValue());
+            //  destroy the gameobject that we copied with its script
+            collision.gameObject.GetComponent<Collectable>().destroyCollectable();
+            
 
 
         }
 
 
-
-
     }
-
 
 
 }

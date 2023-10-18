@@ -6,6 +6,7 @@ using UnityEngine;
 public class ScoreTracker : MonoBehaviour
 {
     public TMP_Text scoreText;
+    public TMP_Text highScore;
     private float playerScore;
 
 
@@ -14,13 +15,10 @@ public class ScoreTracker : MonoBehaviour
     {
         playerScore = 0;
         scoreText.text = "Score: 0";
+        highScore.text = "High Score: " + ((int)HighScoreTracker.loadScore()).ToString();
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void addToScore(float s)
     {
@@ -28,6 +26,13 @@ public class ScoreTracker : MonoBehaviour
         playerScore += s;
         scoreText.text = "Score: " + ((int)playerScore).ToString();
         
+
+    }
+
+    public float getScore()
+    {
+
+        return playerScore;
 
     }
 
