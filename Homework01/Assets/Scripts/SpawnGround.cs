@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Animations;
+//using UnityEditor.Animations;
 using UnityEngine;
-using UnityEngine.UIElements;
+//using UnityEngine.UIElements;
 
 public class SpawnGround : MonoBehaviour
 {
@@ -25,7 +25,6 @@ public class SpawnGround : MonoBehaviour
     private bool canTimerTrigger1;
     private bool canTimerTrigger2;
     private bool skipedGroundSpawn;
-    private float currentGameSpeedModifier;
 
 
 
@@ -83,9 +82,9 @@ public class SpawnGround : MonoBehaviour
 
 
         //  decide to spawn an enemy/collectable/neither
-        i = Random.Range(0, 5);
+        i = Random.Range(0, 10);
         // chance of spawning a collectable or a enemy
-        if (i == 0)
+        if (i <= 2)
         {
 
             GameObject newCollectable = Instantiate(collectablePrefabs[0]);
@@ -96,13 +95,22 @@ public class SpawnGround : MonoBehaviour
         }
         //  Enemy spawner
         //
-        else if (i == 1 || i == 2) 
+        else if (i >= 3 && i <= 5) 
         {
             //enemyPrefabs[Random.Range(0, 0)]
             GameObject newEnemy = Instantiate(enemyPrefabs[Random.Range(0, 2)]);
             newEnemy.transform.position = new Vector2(newPlatform.transform.position.x, newPlatform.transform.position.y + 0.60f);
 
             newEnemy.transform.parent = newPlatform.transform;
+
+        }
+        else if (i > 8)
+        {
+
+            GameObject newCollectable = Instantiate(collectablePrefabs[Random.Range(1,4)]);
+            newCollectable.transform.position = new Vector2(newPlatform.transform.position.x, newPlatform.transform.position.y + 1);
+
+            newCollectable.transform.parent = newPlatform.transform;
 
         }
 

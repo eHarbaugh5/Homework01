@@ -22,9 +22,12 @@ public class PlayerMovement : MonoBehaviour
     public float jumpHeight;
     private bool canJump;
 
+    //  powerups
     public float decendSpeed;
     private bool FeatherPowerUp;
     private float featherTimer;
+    private bool speedPowerUp;
+    private float speedTimer;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +39,8 @@ public class PlayerMovement : MonoBehaviour
         playerAnimator = GetComponent<Animator>();
         canJump = true;
         FeatherPowerUp = false;
+        speedPowerUp = false;
+
     }
 
     // Update is called once per frame
@@ -51,6 +56,17 @@ public class PlayerMovement : MonoBehaviour
     private void playerMovement()
     {
 
+        if (speedPowerUp)
+        {
+
+            speedTimer -= Time.deltaTime;
+            if (speedTimer <= 0)
+            {
+                speedPowerUp = false;
+                movementSpeed = 6;
+            }
+
+        }
 
         inputHorizontal = Input.GetAxisRaw("Horizontal");
 
@@ -187,7 +203,18 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Collectable"))
         {
            //  add score based on the collectable value of the collision
-            scoreTrackerScript.addToScore(collision.gameObject.GetComponent<Collectable>().getCollectableValue());
+           if (!speedPowerUp)
+           {
+
+                scoreTrackerScript.addToScore(collision.gameObject.GetComponent<Collectable>().getCollectableValue());
+
+           }
+           else if (speedPowerUp)
+           {
+
+                scoreTrackerScript.addToScore(collision.gameObject.GetComponent<Collectable>().getCollectableValue() * 3);
+            }
+            
             //  destroy the gameobject that we copied with its script
             collision.gameObject.GetComponent<Collectable>().destroyCollectable();
             
@@ -209,6 +236,17 @@ public class PlayerMovement : MonoBehaviour
 
             FeatherPowerUp = true;
             featherTimer = 7;
+
+            collision.gameObject.GetComponent<Collectable>().destroyCollectable();
+
+        }
+
+        if (collision.gameObject.CompareTag("CollectableSpeed"))
+        {
+
+            speedPowerUp = true;
+            speedTimer = 10;
+            movementSpeed = 3;
 
             collision.gameObject.GetComponent<Collectable>().destroyCollectable();
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HighScoreScreenSetup : MonoBehaviour
 {
@@ -21,6 +22,13 @@ public class HighScoreScreenSetup : MonoBehaviour
         Score.text = (currentScores[3]).ToString();
         LastScore.text = (currentScores[4]).ToString();
 
+
+    }
+
+    public void returnToMainMenu()
+    {
+
+        SceneManager.LoadScene("MainMenu");
 
     }
 
