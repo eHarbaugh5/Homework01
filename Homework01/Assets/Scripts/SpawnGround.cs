@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 public class SpawnGround : MonoBehaviour
 {
+    private GameManager gameManagerScript;
     //  spawning related
     public GameObject[] spawnLocations;
     public GameObject[] groundPrefabs;
@@ -24,11 +25,13 @@ public class SpawnGround : MonoBehaviour
     private bool canTimerTrigger1;
     private bool canTimerTrigger2;
     private bool skipedGroundSpawn;
+    private float currentGameSpeedModifier;
 
 
 
     void Start()
     {
+
         createFloor();
         groundTimerInterval = 3.3f;
         groundTimer = groundTimerInterval;
@@ -36,6 +39,7 @@ public class SpawnGround : MonoBehaviour
         canTimerTrigger2 = true;
         skipedGroundSpawn = false;
         scoreTrackerScript = scoreText.GetComponent<ScoreTracker>();
+        gameManagerScript = GetComponent<GameManager>();
         
     }
 
@@ -51,8 +55,9 @@ public class SpawnGround : MonoBehaviour
     {
 
         //  choses which ground style to spawn
-        GameObject newFloor = Instantiate(groundPrefabs[Random.Range(0, 3)]);
+        GameObject newFloor = Instantiate(groundPrefabs[Random.Range(0, 5)]);
         newFloor.transform.position = new Vector2(spawnLocations[0].transform.position.x, spawnLocations[0].transform.position.y);
+        
 
         // chance of spawning a collectable
         if (Random.Range(0, 4) == 0)
@@ -73,11 +78,12 @@ public class SpawnGround : MonoBehaviour
         //  picks the level that the platform spawns on
         i = Random.Range(1, 3);
         //  choses which platform style to spawn
-        GameObject newPlatform = Instantiate(platformPrefabs[Random.Range(0, 2)]);
+        GameObject newPlatform = Instantiate(platformPrefabs[Random.Range(0, 3)]);
         newPlatform.transform.position = new Vector2(spawnLocations[i].transform.position.x, spawnLocations[i].transform.position.y);
 
+
         //  decide to spawn an enemy/collectable/neither
-        i = Random.Range(0, 4);
+        i = Random.Range(0, 5);
         // chance of spawning a collectable or a enemy
         if (i == 0)
         {
@@ -88,10 +94,12 @@ public class SpawnGround : MonoBehaviour
             newCollectable.transform.parent = newPlatform.transform;
 
         }
-        else if (i == 1)
+        //  Enemy spawner
+        //
+        else if (i == 1 || i == 2) 
         {
             //enemyPrefabs[Random.Range(0, 0)]
-            GameObject newEnemy = Instantiate(enemyPrefabs[0]);
+            GameObject newEnemy = Instantiate(enemyPrefabs[Random.Range(0, 2)]);
             newEnemy.transform.position = new Vector2(newPlatform.transform.position.x, newPlatform.transform.position.y + 0.60f);
 
             newEnemy.transform.parent = newPlatform.transform;
@@ -136,20 +144,22 @@ public class SpawnGround : MonoBehaviour
 
         }
 
+        //  platform 1 trigger
         if (groundTimer >= groundTimerInterval / 2 && canTimerTrigger1)
         {
 
-            if (Random.Range(0,4) != 0)
+            if (Random.Range(0,5) != 0)
             {
                 createPlatform();
             }
             canTimerTrigger1 = false;
 
         }
+        //  platform 2 trigger
         else if (groundTimer <= groundTimerInterval / 2 && canTimerTrigger2)
         {
 
-            if (Random.Range(0, 4) != 0)
+            if (Random.Range(0, 6) != 0)
             {
                 createPlatform();
             }
@@ -159,6 +169,8 @@ public class SpawnGround : MonoBehaviour
         
 
     }
+
+    
     
 
 }

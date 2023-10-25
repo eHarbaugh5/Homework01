@@ -8,6 +8,9 @@ TagManager:
   - Enemy
   - OB
   - Collectable
+  - CollectableDisable
+  - CollectableFeather
+  - CollectableSpeed
   layers:
   - Default
   - TransparentFX

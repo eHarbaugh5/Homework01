@@ -39,7 +39,7 @@ public class GameOverMenu : MonoBehaviour
     public void exitGame()
     {
 
-        Application.Quit();
+        SceneManager.LoadScene("MainMenu");
 
     }
 
@@ -51,6 +51,8 @@ public class GameOverMenu : MonoBehaviour
         SceneManager.LoadScene("SampleScene");
 
     }
+
+    
 
 
 }

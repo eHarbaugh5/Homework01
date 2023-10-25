@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 public class GroundMovement : MonoBehaviour
 {
     private float movementSpeed;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +24,13 @@ public class GroundMovement : MonoBehaviour
             Destroy(this.gameObject);
 
         }
+    }
+
+    public void setGroundMoveSpeed(float m)
+    {
+
+        movementSpeed = m;
+
     }
 
 

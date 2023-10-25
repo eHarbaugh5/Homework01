@@ -15,7 +15,11 @@ public class ScoreTracker : MonoBehaviour
     {
         playerScore = 0;
         scoreText.text = "Score: 0";
-        highScore.text = "High Score: " + ((int)HighScoreTracker.loadScore()).ToString();
+    
+        
+        highScore.text = "High Score: " + ((int)HighScoreTracker.loadScore()[0]).ToString();
+
+        
 
     }
 

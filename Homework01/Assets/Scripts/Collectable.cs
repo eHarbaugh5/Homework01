@@ -21,21 +21,12 @@ public class Collectable : MonoBehaviour
 
     public void destroyCollectable()
     {
-        Debug.Log("Destroy this.object");
+        
         Destroy(this.gameObject);
 
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
 
-        
-        
-
-    }
-    //  perminant hover
-    //  disable mothership
-    //  gold rush
 
 
 }

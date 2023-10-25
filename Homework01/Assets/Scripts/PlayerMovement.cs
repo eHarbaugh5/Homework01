@@ -5,6 +5,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Device;
+//using UnityEngine.Windows;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     private GameObject newParent;
     public TMP_Text scoreTrackerText;
     private ScoreTracker scoreTrackerScript;
+    private Animator playerAnimator;
 
     private float inputHorizontal;
     public float movementSpeed;
@@ -21,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
     private bool canJump;
 
     public float decendSpeed;
+    private bool FeatherPowerUp;
+    private float featherTimer;
 
     // Start is called before the first frame update
     void Start()
@@ -29,7 +33,9 @@ public class PlayerMovement : MonoBehaviour
         playerRigidBody = GetComponent<Rigidbody2D>();
         gameManagerScript = gameManager.GetComponent<GameManager>();
         scoreTrackerScript = scoreTrackerText.GetComponent<ScoreTracker>();
+        playerAnimator = GetComponent<Animator>();
         canJump = true;
+        FeatherPowerUp = false;
     }
 
     // Update is called once per frame
@@ -37,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
     {
         playerMovement();
         playerJump();
+
+        
 
     }
 
@@ -47,7 +55,32 @@ public class PlayerMovement : MonoBehaviour
         inputHorizontal = Input.GetAxisRaw("Horizontal");
 
         playerRigidBody.velocity = new Vector2(inputHorizontal * movementSpeed, playerRigidBody.velocity.y);
-        
+
+        if (inputHorizontal == 0)
+        {
+            playerAnimator.SetBool("isWalking", false);
+
+        }
+        else if (canJump && inputHorizontal != 0)
+        {
+
+            playerAnimator.SetBool("isWalking", true);
+
+        }
+
+        if (!canJump)
+        {
+
+            playerAnimator.SetBool("isJumping", true);
+
+        }
+        else
+        {
+
+            playerAnimator.SetBool("isJumping", false);
+
+        }
+
         //  unparent if you fall/move off a platform
         //  is ~0, but that triggers because of physics
         if (playerRigidBody.velocity.y < -1)
@@ -58,12 +91,22 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
+
+
     }
 
 
     private void playerJump()
     {
 
+        if (FeatherPowerUp)
+        {
+            decendSpeed = 0;
+        }
+        else
+        {
+            decendSpeed = -3;
+        }
         
         if (Input.GetKeyDown(KeyCode.Space) && canJump)
         {
@@ -76,12 +119,23 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && !canJump)
         {
             
-            if (playerRigidBody.velocity.y <= -3)
+            if (playerRigidBody.velocity.y <= decendSpeed)
             {
-                playerRigidBody.velocity = new Vector2(playerRigidBody.velocity.x, -3);
+                playerRigidBody.velocity = new Vector2(playerRigidBody.velocity.x, decendSpeed);
                 
             }
 
+
+        }
+
+        if (FeatherPowerUp)
+        {
+
+            featherTimer -= Time.deltaTime;
+            if (featherTimer <= 0)
+            {
+                FeatherPowerUp = false;
+            }
 
         }
         
@@ -140,6 +194,26 @@ public class PlayerMovement : MonoBehaviour
 
 
         }
+
+        if (collision.gameObject.CompareTag("CollectableDisable"))
+        {
+
+            gameManagerScript.disableUFO();
+
+            collision.gameObject.GetComponent<Collectable>().destroyCollectable();
+
+        }
+
+        if (collision.gameObject.CompareTag("CollectableFeather"))
+        {
+
+            FeatherPowerUp = true;
+            featherTimer = 7;
+
+            collision.gameObject.GetComponent<Collectable>().destroyCollectable();
+
+        }
+
 
 
     }
